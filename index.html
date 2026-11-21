@@ -672,9 +672,58 @@
     if(e.key === 'Escape' && modal.classList.contains('active')) closeModal();
   });
 
+  /**
+   * Rellena el formulario de contacto con los datos proporcionados.
+   * @param {Object} datos - Objeto con los valores a rellenar.
+   * @param {string} [datos.nombre] - Nombre completo.
+   * @param {string} [datos.email] - Correo electrónico.
+   * @param {string} [datos.telefono] - Teléfono.
+   * @param {string} [datos.empresa] - Empresa.
+   * @param {string} [datos.servicio] - Valor del servicio (contable, auditoria, fiscal, business, decision, legales).
+   * @param {string} [datos.mensaje] - Mensaje.
+  */
+  function rellenarFormularioContacto(datos = {}) {
+    const form = document.getElementById('contactForm');
+    if (!form) {
+      console.warn('No se encontró el formulario #contactForm');
+      return;
+    }
+
+    // Mapeo de campo -> id del input/select/textarea
+    const campos = {
+      nombre: 'nombre',
+      email: 'email',
+      telefono: 'telefono',
+      empresa: 'empresa',
+      servicio: 'servicio',
+      mensaje: 'mensaje'
+    };
+
+    Object.entries(campos).forEach(([key, id]) => {
+      if (datos[key] !== undefined && datos[key] !== null) {
+        const el = document.getElementById(id);
+        if (el) {
+          el.value = datos[key];
+
+          // Disparar eventos para frameworks/reactividad si aplica
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
+    });
+  }
+  
   // Envío del formulario
   contactForm.addEventListener('submit', e => {
     e.preventDefault();
+    rellenarFormularioContacto({
+      nombre: 'Juan Pérez',
+      email: 'juan.perez@empresa.com',
+      telefono: '504-9876-5432',
+      empresa: 'Mi Empresa S.A.',
+      servicio: 'fiscal',
+      mensaje: 'Necesito asesoría fiscal para mi negocio.'
+    });
     if(!contactForm.checkValidity()){
       contactForm.reportValidity();
       return;
@@ -695,7 +744,9 @@
     // Enviamos a Google Script
     fetch("https://script.google.com/macros/s/AKfycbxeA1dVKfxHMwDoKVnY2pFLB-ngIOCEuc_PXoZj7xU7/dev", {
       method: 'POST',
-      body: formData
+      body: data,
+      // Añadimos esto para evitar problemas de CORS
+      mode: 'no-cors' 
     })
     .then(response => response.json())
     .then(data => {
