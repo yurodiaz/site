@@ -505,7 +505,7 @@
         </div>
         <div>
           <label class="form-label" for="email">Correo electrónico *</label>
-          <input class="form-input" type="email" id="email" name="email" required placeholder="ejemplo@empresa.com">
+          <input class="form-input" type="email" id="email" name="correo" required placeholder="ejemplo@empresa.com">
         </div>
       </div>
 
@@ -717,7 +717,7 @@
   contactForm.addEventListener('submit', e => {
     e.preventDefault();
     rellenarFormularioContacto({
-      nombre: 'Mario Gomez',
+      nombre: 'Juan Manzana',
       email: 'juan.perez@empresa.com',
       telefono: '504-9876-5432',
       empresa: 'Mi Empresa S.A.',
@@ -749,20 +749,22 @@
     .then(response => response.json())
     .then(data => {
       if(data.status === 'success') {
-        alert('¡Solicitud enviada con éxito! Nos pondremos en contacto pronto.');
-        form.reset(); // Limpia el formulario
+        //alert('¡Solicitud enviada con éxito! Nos pondremos en contacto pronto.');
+        //form.reset(); // Limpia el formulario
+        modalContent.classList.add('success');   // ✅ check animado
       } else {
-        alert('Hubo un error: ' + data.message);
+        // alert('Hubo un error: ' + data.message);
       }
     })
     .catch(error => {
       console.error('Error!', error.message);
-      alert('Error de conexión. Por favor, intenta de nuevo.');
+      // alert('Error de conexión. Por favor, intenta de nuevo.');
     })
     .finally(() => {
       // Restauramos el botón
-      submitBtn.textContent = 'ENVIAR SOLICITUD';
+      submitBtn.textContent = 'Enviar Solicitud';
       submitBtn.disabled = false;
+      setTimeout(closeModal, 2600);            // cierre automático + reanuda slider
     });
   });
 })();
