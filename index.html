@@ -501,11 +501,11 @@
       <div class="form-row">
         <div>
           <label class="form-label" for="nombre">Nombre completo *</label>
-          <input class="form-input" type="text" id="nombre" required placeholder="Ej: Juan Pérez">
+          <input class="form-input" type="text" id="nombre" name="nombre" required placeholder="Ej: Juan Pérez">
         </div>
         <div>
           <label class="form-label" for="email">Correo electrónico *</label>
-          <input class="form-input" type="email" id="email" required placeholder="ejemplo@empresa.com">
+          <input class="form-input" type="email" id="email" name="email" required placeholder="ejemplo@empresa.com">
         </div>
       </div>
 
@@ -513,18 +513,18 @@
       <div class="form-row">
         <div>
           <label class="form-label" for="telefono">Teléfono</label>
-          <input class="form-input" type="tel" id="telefono" placeholder="504-XXXX-XXXX">
+          <input class="form-input" type="tel" id="telefono" name="telefono" placeholder="504-XXXX-XXXX">
         </div>
         <div>
           <label class="form-label" for="empresa">Empresa</label>
-          <input class="form-input" type="text" id="empresa" placeholder="Nombre de su organización">
+          <input class="form-input" type="text" id="empresa" name="empresa" placeholder="Nombre de su organización">
         </div>
       </div>
 
       <!-- Fila 3: Servicio (full width) -->
       <div class="form-group">
         <label class="form-label" for="servicio">Servicio de interés *</label>
-        <select class="form-select" id="servicio" required>
+        <select class="form-select" id="servicio" name="servicio" required>
           <option value="" disabled selected>Seleccione un servicio</option>
           <option value="contable">Servicios Contables</option>
           <option value="auditoria">Auditoría Especializada</option>
@@ -538,7 +538,7 @@
       <!-- Fila 4: Mensaje (full width, más ancho y alto) -->
       <div class="form-group">
         <label class="form-label" for="mensaje">Mensaje</label>
-        <textarea class="form-textarea" id="mensaje" rows="4" placeholder="Describa brevemente su necesidad..."></textarea>
+        <textarea class="form-textarea" id="mensaje" name="mensaje" rows="4" placeholder="Describa brevemente su necesidad..."></textarea>
       </div>
 
       <div class="form-group">
