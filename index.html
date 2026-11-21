@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control Gerencial | Colaborando con su Organización</title>
+<style>
+  :root{
+    --ease: cubic-bezier(.77,0,.18,1);
+    --primary: #003d7a;
+    --secondary: #0077cc;
+    --accent: #4db8ff;
+    --light: #cfe8ff;
+    --white: #ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden;font-family:'Segoe UI',system-ui,sans-serif;background:#001a33;color:#fff}
+
+  /* ====== LOGO ====== */
+  .logo{
+    position:absolute;top:2rem;left:2rem;z-index:10;
+    display:flex;align-items:center;gap:.8rem;
+  }
+  .logo__icon{
+    width:52px;height:52px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, var(--accent), var(--primary));
+    display:grid;place-items:center;
+    box-shadow:0 4px 20px rgba(77,184,255,.3);
+  }
+  .logo__icon svg{width:30px;height:30px}
+  .logo__text{display:flex;flex-direction:column}
+  .logo__name{font-size:.95rem;font-weight:800;letter-spacing:2px;color:var(--white);text-transform:uppercase}
+  .logo__tag{font-size:.6rem;letter-spacing:1.5px;color:var(--accent);text-transform:uppercase}
+
+  /* ====== HERO ====== */
+  .hero{position:relative;width:100vw;height:100vh;overflow:hidden}
+  .slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity 1.2s var(--ease), visibility 1.2s}
+  .slide.active{opacity:1;visibility:visible}
+
+  .slide__bg{
+    position:absolute;inset:-60px;
+    background-size:cover;background-position:center;
+    transition:transform .15s ease-out;will-change:transform;
+    animation:kenburns 14s ease-in-out infinite alternate;
+  }
+  @keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.06)}}
+
+  .slide::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(135deg,rgba(0,26,51,.92) 0%,rgba(0,61,122,.7) 40%,rgba(0,119,204,.3) 100%);
+    pointer-events:none;
+  }
+
+  /* ====== CONTENIDO ====== */
+  .slide__content{
+    position:relative;z-index:2;height:100%;
+    display:grid;grid-template-columns:1fr 1fr;
+    align-items:center;gap:4rem;padding:0 8vw;
+  }
+  .slide__left{max-width:580px}
+  .slide__tag{
+    display:inline-block;font-size:.75rem;letter-spacing:4px;
+    text-transform:uppercase;color:var(--accent);
+    margin-bottom:1rem;padding:.4rem 1rem;
+    border:1px solid var(--accent);border-radius:20px;
+    opacity:0;transform:translateY(30px);
+    transition:all .8s var(--ease) .2s;
+  }
+  .slide__title{
+    font-size:clamp(2rem,5vw,4rem);font-weight:800;
+    line-height:1.08;margin-bottom:1.2rem;color:var(--white);
+    opacity:0;transform:translateY(40px);
+    transition:all .9s var(--ease) .35s;
+  }
+  .slide__title span{color:var(--accent)}
+  .slide__subtitle{
+    font-size:1rem;color:var(--light);line-height:1.6;
+    margin-bottom:1.8rem;opacity:0;transform:translateY(40px);
+    transition:all .9s var(--ease) .45s;
+  }
+  .slide__cta{
+    display:inline-flex;align-items:center;gap:.8rem;
+    padding:.9rem 2rem;background:var(--secondary);
+    color:var(--white);text-decoration:none;font-weight:700;
+    letter-spacing:1px;text-transform:uppercase;font-size:.85rem;
+    border:none;cursor:pointer;border-radius:4px;
+    opacity:0;transform:translateY(40px);
+    transition:all .9s var(--ease) .55s, background .3s;
+  }
+  .slide__cta:hover{background:var(--accent);color:var(--primary)}
+  .slide__cta svg{transition:transform .3s}
+  .slide__cta:hover svg{transform:translateX(6px)}
+
+  .slide.active .slide__tag,
+  .slide.active .slide__title,
+  .slide.active .slide__subtitle,
+  .slide.active .slide__cta,
+  .slide.active .slide__right{opacity:1;transform:translate(0,0)}
+
+  /* ====== PANEL RESUMEN ====== */
+  .slide__right{
+    max-width:520px;padding:2rem 2.2rem;
+    background:rgba(0,61,122,.6);backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border:1px solid rgba(77,184,255,.2);
+    border-left:4px solid var(--accent);border-radius:0 8px 8px 0;
+    opacity:0;transform:translateX(60px);
+    transition:all 1s var(--ease) .6s;
+  }
+  .slide__right h3{
+    font-size:.8rem;letter-spacing:3px;text-transform:uppercase;
+    color:var(--accent);margin-bottom:1rem;font-weight:600;
+  }
+  .slide__summary{
+    font-size:.95rem;line-height:1.7;color:#d0e8ff;margin-bottom:1.4rem;
+  }
+  .slide__features{list-style:none;display:flex;flex-direction:column;gap:.7rem}
+  .slide__features li{
+    display:flex;align-items:flex-start;gap:.7rem;
+    font-size:.88rem;color:#b8dcff;line-height:1.5;
+  }
+  .slide__features li svg{flex-shrink:0;margin-top:3px;color:var(--accent)}
+
+  /* ====== NAVEGACIÓN ====== */
+  .nav-arrow{
+    position:absolute;top:50%;transform:translateY(-50%);z-index:5;
+    width:52px;height:52px;border:2px solid rgba(77,184,255,.4);
+    background:rgba(0,26,51,.4);backdrop-filter:blur(8px);
+    color:var(--accent);border-radius:50%;cursor:pointer;
+    display:grid;place-items:center;transition:all .3s;
+  }
+  .nav-arrow:hover{background:var(--accent);border-color:var(--accent);color:var(--primary)}
+  .nav-arrow.prev{left:2rem}
+  .nav-arrow.next{right:2rem}
+
+  .nav-bottom{
+    position:absolute;bottom:2.5rem;left:8vw;right:8vw;z-index:5;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .dots{display:flex;gap:.7rem}
+  .dot{
+    width:36px;height:3px;background:rgba(77,184,255,.25);
+    border:none;cursor:pointer;transition:background .3s;
+    position:relative;overflow:hidden;border-radius:2px;
+  }
+  .dot::after{
+    content:"";position:absolute;inset:0;background:var(--accent);
+    transform:scaleX(0);transform-origin:left;transition:transform .3s;
+  }
+  .dot.active{background:rgba(77,184,255,.15)}
+  .dot.active::after{animation:fill 10s linear forwards}
+  @keyframes fill{to{transform:scaleX(1)}}
+
+  /* ⏸️ Pausa REAL de la barra de progreso mientras el modal está abierto */
+  body.modal-open .dot.active::after{animation-play-state:paused}
+
+  .counter{font-size:.85rem;letter-spacing:2px;color:var(--light)}
+  .counter span{color:var(--accent);font-weight:700;font-size:1.1rem}
+
+  /* ====== MODAL DE CONTACTO ====== */
+  .modal-overlay{
+    position:fixed;inset:0;z-index:100;
+    background:rgba(0,26,51,.85);backdrop-filter:blur(12px);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;visibility:hidden;
+    transition:opacity .4s ease, visibility .4s ease;
+  }
+  .modal-overlay.active{opacity:1;visibility:visible}
+
+  .modal-content{
+    background:rgba(0,61,122,.78);
+    border:1px solid rgba(77,184,255,.3);
+    border-top:4px solid var(--accent);
+    border-radius:12px;padding:2.5rem 3rem;
+    width:92%;max-width:680px;position:relative;
+    max-height:90vh;overflow-y:auto;
+    box-shadow:0 25px 50px -12px rgba(0,0,0,.6);
+    transform:perspective(1000px) rotateX(-10deg) translateY(40px) scale(.9);
+    opacity:0;
+    transition:all .6s cubic-bezier(.16,1,.3,1);
+  }
+  .modal-overlay.active .modal-content{
+    transform:perspective(1000px) rotateX(0) translateY(0) scale(1);
+    opacity:1;
+  }
+
+  .modal-close{
+    position:absolute;top:1.2rem;right:1.2rem;
+    width:36px;height:36px;border-radius:50%;
+    border:1px solid rgba(77,184,255,.3);
+    background:rgba(0,26,51,.5);color:var(--accent);
+    cursor:pointer;display:grid;place-items:center;
+    transition:all .3s;z-index:3;
+  }
+  .modal-close:hover{background:var(--accent);color:var(--primary);border-color:var(--accent)}
+
+  .modal-title{font-size:1.5rem;font-weight:700;color:var(--white);margin-bottom:.5rem}
+  .modal-subtitle{font-size:.9rem;color:var(--light);margin-bottom:2rem;line-height:1.5}
+
+  /* 🆕 Filas de 2 columnas */
+  .form-row{
+    display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;
+    margin-bottom:1.2rem;
+    opacity:0;transform:translateY(20px);
+    transition:all .5s cubic-bezier(.16,1,.3,1);
+  }
+  .form-group{
+    opacity:0;transform:translateY(20px);
+    transition:all .5s cubic-bezier(.16,1,.3,1);
+    margin-bottom:1.2rem;
+  }
+  /* Aparición escalonada */
+  .modal-overlay.active .form-row:nth-of-type(1){transition-delay:.1s;opacity:1;transform:translateY(0)}
+  .modal-overlay.active .form-row:nth-of-type(2){transition-delay:.18s;opacity:1;transform:translateY(0)}
+  .modal-overlay.active .form-group:nth-of-type(3){transition-delay:.26s;opacity:1;transform:translateY(0)}
+  .modal-overlay.active .form-group:nth-of-type(4){transition-delay:.34s;opacity:1;transform:translateY(0)}
+  .modal-overlay.active .form-group:nth-of-type(5){transition-delay:.42s;opacity:1;transform:translateY(0)}
+
+  .form-label{
+    display:block;font-size:.8rem;letter-spacing:1px;
+    text-transform:uppercase;color:var(--accent);margin-bottom:.4rem;font-weight:600;
+  }
+  .form-input,.form-select,.form-textarea{
+    width:100%;padding:.85rem 1rem;
+    background:rgba(0,26,51,.6);    /* ✅ alfa correcto 0–1 */
+    border:1px solid rgba(77,184,255,.3);
+    border-radius:6px;color:var(--white);
+    font-family:inherit;font-size:.95rem;
+    transition:all .3s ease;outline:none;
+  }
+  .form-input::placeholder,.form-textarea::placeholder{color:rgba(207,232,255,.35)}
+  .form-input:focus,.form-select:focus,.form-textarea:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(77,184,255,.15);
+  }
+  .form-select{cursor:pointer;appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234db8ff' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 1rem center;
+  }
+  .form-select option{background:var(--primary);color:var(--white)}
+  /* 🆕 Mensaje más ancho y alto */
+  .form-textarea{resize:vertical;min-height:120px;width:100%}
+
+  .form-submit{
+    width:100%;padding:1rem;background:var(--secondary);
+    color:var(--white);font-weight:700;letter-spacing:1px;
+    text-transform:uppercase;border:none;border-radius:6px;
+    cursor:pointer;font-size:.9rem;transition:all .3s ease;
+  }
+  .form-submit:hover{background:var(--accent);color:var(--primary);transform:translateY(-2px);box-shadow:0 8px 20px rgba(77,184,255,.3)}
+
+  /* ✅ Pantalla de éxito */
+  .form-success{
+    position:absolute;inset:0;z-index:4;
+    background:rgba(0,26,51,.94);backdrop-filter:blur(8px);
+    border-radius:12px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:1rem;text-align:center;padding:2rem;
+    opacity:0;visibility:hidden;
+    transition:opacity .4s ease, visibility .4s ease;
+  }
+  .modal-content.success .form-success{opacity:1;visibility:visible}
+  .form-success svg{width:72px;height:72px}
+  .form-success svg circle{
+    stroke-dasharray:220;stroke-dashoffset:220;
+    animation:draw .7s .1s ease forwards;
+  }
+  .form-success svg path{
+    stroke-dasharray:60;stroke-dashoffset:60;
+    animation:draw .5s .6s ease forwards;
+  }
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .form-success h4{font-size:1.3rem;color:var(--white)}
+  .form-success p{font-size:.9rem;color:var(--light);max-width:340px}
+
+  /* ====== RESPONSIVE ====== */
+  @media(max-width:900px){
+    .logo{top:1.2rem;left:1.2rem}
+    .logo__icon{width:40px;height:40px}
+    .logo__name{font-size:.75rem}
+    .slide__content{
+      grid-template-columns:1fr;gap:1.5rem;
+      padding:5rem 6vw 6rem;align-content:start;overflow-y:auto;
+    }
+    .slide__right{
+      padding:1.5rem;transform:translateY(40px);
+      border-radius:8px;border-left:4px solid var(--accent);
+    }
+    .slide__title{font-size:clamp(1.6rem,6vw,2.5rem);margin-bottom:.8rem}
+    .nav-arrow{width:42px;height:42px}
+    .nav-arrow.prev{left:.8rem}
+    .nav-arrow.next{right:.8rem}
+    .nav-bottom{left:6vw;right:6vw;bottom:1.5rem}
+    .dot{width:24px}
+  }
+  /* 🆕 El formulario colapsa a 1 columna en pantallas pequeñas */
+  @media(max-width:640px){
+    .modal-content{padding:1.8rem 1.4rem;width:95%}
+    .form-row{grid-template-columns:1fr;gap:0}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGO -->
+<div class="logo">
+  <div class="logo__icon">
+    <svg viewBox="0 0 40 40" fill="none">
+      <polygon points="8,32 20,8 32,32" fill="rgba(255,255,255,.9)"/>
+      <polygon points="14,32 20,16 26,32" fill="rgba(0,61,122,.6)"/>
+      <rect x="6" y="28" width="28" height="3" rx="1" fill="rgba(255,255,255,.9)"/>
+    </svg>
+  </div>
+  <div class="logo__text">
+    <span class="logo__name">Control Gerencial</span>
+    <span class="logo__tag">Colaborando con su organización</span>
+  </div>
+</div>
+
+<!-- HERO SLIDER -->
+<section class="hero" id="hero">
+
+  <!-- SLIDE 1 -->
+  <article class="slide active">
+    <div class="slide__bg" style="background-image:url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1920&q=80')"></div>
+    <div class="slide__content">
+      <div class="slide__left">
+        <span class="slide__tag">Servicio 01</span>
+        <h2 class="slide__title">Servicios <span>Contables</span></h2>
+        <p class="slide__subtitle">Registros contables, procesamiento en sistema computarizado y presentación de Estados Financieros mensuales con informe gerencial.</p>
+        <button class="slide__cta modal-trigger">Solicitar información
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <aside class="slide__right">
+        <h3>Resumen del servicio</h3>
+        <p class="slide__summary">Nuestra responsabilidad es realizar los registros contables, procesamiento de datos en sistema computarizado, hasta la presentación de los Estados Financieros en forma mensual. El servicio tiene un enfoque de proveer información directamente a la gerencia mediante informes que detallan cada problema detectado y orientación fiscal.</p>
+        <ul class="slide__features">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Registros contables mensuales</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Estados Financieros en sistema computarizado</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Informes de problemas detectados a gerencia</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Orientación fiscal personalizada</li>
+        </ul>
+      </aside>
+    </div>
+  </article>
+
+  <!-- SLIDE 2 -->
+  <article class="slide">
+    <div class="slide__bg" style="background-image:url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1920&q=80')"></div>
+    <div class="slide__content">
+      <div class="slide__left">
+        <span class="slide__tag">Servicio 02</span>
+        <h2 class="slide__title">Auditoría <span>Especializada</span></h2>
+        <p class="slide__subtitle">Revisión y evaluación integral de métodos, sistemas y procedimientos para asegurar el cumplimiento de políticas, planes y leyes.</p>
+        <button class="slide__cta modal-trigger">Solicitar información
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <aside class="slide__right">
+        <h3>Resumen del servicio</h3>
+        <p class="slide__summary">Auditar significa revisar y evaluar si los métodos, sistemas y procedimientos en todas las fases del proceso administrativo están representados en forma cuantitativa en los Estados Financieros. Nuestro staff ha sido seleccionado por su experiencia en firmas auditoras reconocidas.</p>
+        <ul class="slide__features">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Autorizados por la Comisión de Banca y Seguros</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Estados Financieros auditados ante terceros</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Credibilidad para obtención de créditos</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Controles internos y detección de debilidades</li>
+        </ul>
+      </aside>
+    </div>
+  </article>
+
+  <!-- SLIDE 3 -->
+  <article class="slide">
+    <div class="slide__bg" style="background-image:url('https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1920&q=80')"></div>
+    <div class="slide__content">
+      <div class="slide__left">
+        <span class="slide__tag">Servicio 03</span>
+        <h2 class="slide__title">Asesoría <span>Fiscal</span></h2>
+        <p class="slide__subtitle">Orientación en la aplicación de impuestos, aprovechamiento de beneficios tributarios y gestiones ante la Dirección Ejecutiva de Ingresos.</p>
+        <button class="slide__cta modal-trigger">Solicitar información
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <aside class="slide__right">
+        <h3>Resumen del servicio</h3>
+        <p class="slide__summary">Brindamos apoyo a empresas orientándolas en la aplicación de cada uno de los impuestos y leyes tributarias, aprovechamiento de beneficios fiscales según actividad, interpretación adecuada de cada impuesto y gestiones ante instituciones tributarias. Personal con más de 15 años de experiencia ante la DEI.</p>
+        <ul class="slide__features">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Participación en reglamento de Ley de Equidad Tributaria</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Experiencia ante la Dirección Ejecutiva de Ingresos</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Clientes en Honduras, Guatemala, El Salvador</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Estudios de Precios de Transferencia</li>
+        </ul>
+      </aside>
+    </div>
+  </article>
+
+  <!-- SLIDE 4 -->
+  <article class="slide">
+    <div class="slide__bg" style="background-image:url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80')"></div>
+    <div class="slide__content">
+      <div class="slide__left">
+        <span class="slide__tag">Servicio 04</span>
+        <h2 class="slide__title">Business <span>Solution</span></h2>
+        <p class="slide__subtitle">Desarrollo y distribución de programas de computación, implantación de controles internos y herramientas tecnológicas para la gestión.</p>
+        <button class="slide__cta modal-trigger">Solicitar información
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <aside class="slide__right">
+        <h3>Resumen del servicio</h3>
+        <p class="slide__summary">Esta división es responsable de asesorar en el cumplimiento de obligaciones tributarias y legales, orientación en manejo de documentación, implantación de controles y herramientas que agilicen los controles internos mediante sistemas informáticos BUSINESS SOLUTION, y desarrollo de presupuestos.</p>
+        <ul class="slide__features">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Sistemas informáticos de control interno</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Desarrollo de software a medida</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Distribución de antivirus y control de telecomunicaciones</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Desarrollo de presupuestos empresariales</li>
+        </ul>
+      </aside>
+    </div>
+  </article>
+
+  <!-- SLIDE 5 -->
+  <article class="slide">
+    <div class="slide__bg" style="background-image:url('https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=1920&q=80')"></div>
+    <div class="slide__content">
+      <div class="slide__left">
+        <span class="slide__tag">Servicio 05</span>
+        <h2 class="slide__title">Soporte a la <span>Decisión</span></h2>
+        <p class="slide__subtitle">Análisis financiero estratégico para la toma de decisiones ejecutivas: liquidez, actividad, endeudamiento y rentabilidad.</p>
+        <button class="slide__cta modal-trigger">Solicitar información
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <aside class="slide__right">
+        <h3>Resumen del servicio</h3>
+        <p class="slide__summary">Realizamos un análisis financiero estratégico destinado a apoyar la toma de decisiones a nivel ejecutivo, brindando un panorama claro del desempeño logrado por la gestión en áreas sensibles como liquidez, actividad, endeudamiento y rentabilidad, convirtiendo los Estados Financieros en indicadores y razonamientos claros.</p>
+        <ul class="slide__features">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Análisis de razones financieras específicas</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Indicadores de corto y largo plazo</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Panorama de liquidez y rentabilidad</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Objetivos de crecimiento organizacional</li>
+        </ul>
+      </aside>
+    </div>
+  </article>
+
+  <!-- SLIDE 6 -->
+  <article class="slide">
+    <div class="slide__bg" style="background-image:url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80')"></div>
+    <div class="slide__content">
+      <div class="slide__left">
+        <span class="slide__tag">Servicio 06</span>
+        <h2 class="slide__title">Legales y <span>Gestiones</span></h2>
+        <p class="slide__subtitle">Asesoría legal, constitución de sociedades, registro de marcas y trámites ante instituciones gubernamentales.</p>
+        <button class="slide__cta modal-trigger">Solicitar información
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <aside class="slide__right">
+        <h3>Resumen del servicio</h3>
+        <p class="slide__summary">Mediante alianzas estratégicas con bufetes en Honduras, Guatemala y El Salvador, realizamos asesoría legal general, constitución de sociedades, exenciones, registro de marcas y patentes, además de trámites ante Alcaldías, entes reguladores e instituciones gubernamentales.</p>
+        <ul class="slide__features">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Constitución de sociedades y exenciones</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Registro de marcas y patentes</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Trámites ante entes reguladores</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Alianzas legales en 3 países centroamericanos</li>
+        </ul>
+      </aside>
+    </div>
+  </article>
+
+  <!-- Flechas -->
+  <button class="nav-arrow prev" aria-label="Anterior">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  </button>
+  <button class="nav-arrow next" aria-label="Siguiente">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+  </button>
+
+  <!-- Dots + contador -->
+  <div class="nav-bottom">
+    <div class="dots" id="dots"></div>
+    <div class="counter"><span id="current">01</span> / <span id="total">06</span></div>
+  </div>
+
+</section>
+
+<!-- ====== MODAL DE CONTACTO ====== -->
+<div class="modal-overlay" id="contactModal">
+  <div class="modal-content" id="modalContent">
+    <button class="modal-close" id="closeModal" aria-label="Cerrar">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+
+    <h3 class="modal-title">Solicitar Información</h3>
+    <p class="modal-subtitle">Complete el formulario y un especialista de Control Gerencial se pondrá en contacto con usted a la brevedad.</p>
+
+    <form id="contactForm" novalidate>
+      <!-- Fila 1: Nombre + Correo -->
+      <div class="form-row">
+        <div>
+          <label class="form-label" for="nombre">Nombre completo *</label>
+          <input class="form-input" type="text" id="nombre" required placeholder="Ej: Juan Pérez">
+        </div>
+        <div>
+          <label class="form-label" for="email">Correo electrónico *</label>
+          <input class="form-input" type="email" id="email" required placeholder="ejemplo@empresa.com">
+        </div>
+      </div>
+
+      <!-- Fila 2: Teléfono + Empresa -->
+      <div class="form-row">
+        <div>
+          <label class="form-label" for="telefono">Teléfono</label>
+          <input class="form-input" type="tel" id="telefono" placeholder="504-XXXX-XXXX">
+        </div>
+        <div>
+          <label class="form-label" for="empresa">Empresa</label>
+          <input class="form-input" type="text" id="empresa" placeholder="Nombre de su organización">
+        </div>
+      </div>
+
+      <!-- Fila 3: Servicio (full width) -->
+      <div class="form-group">
+        <label class="form-label" for="servicio">Servicio de interés *</label>
+        <select class="form-select" id="servicio" required>
+          <option value="" disabled selected>Seleccione un servicio</option>
+          <option value="contable">Servicios Contables</option>
+          <option value="auditoria">Auditoría Especializada</option>
+          <option value="fiscal">Asesoría Fiscal</option>
+          <option value="business">Business Solution</option>
+          <option value="decision">Soporte a la Decisión</option>
+          <option value="legales">Legales y Gestiones</option>
+        </select>
+      </div>
+
+      <!-- Fila 4: Mensaje (full width, más ancho y alto) -->
+      <div class="form-group">
+        <label class="form-label" for="mensaje">Mensaje</label>
+        <textarea class="form-textarea" id="mensaje" rows="4" placeholder="Describa brevemente su necesidad..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="form-submit" id="submitBtn">Enviar Solicitud</button>
+      </div>
+    </form>
+
+    <!-- ✅ Pantalla de éxito -->
+    <div class="form-success">
+      <svg viewBox="0 0 80 80" fill="none">
+        <circle cx="40" cy="40" r="35" stroke="#4db8ff" stroke-width="4"/>
+        <path d="M25 41l10 10 20-22" stroke="#4db8ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h4>¡Solicitud enviada!</h4>
+      <p>Gracias por contactar a Control Gerencial. Un especialista le responderá a la brevedad.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const hero     = document.getElementById('hero');
+  const slides   = hero.querySelectorAll('.slide');
+  const dotsWrap = document.getElementById('dots');
+  const currEl   = document.getElementById('current');
+  const totalEl  = document.getElementById('total');
+  let index = 0;
+  const total = slides.length;
+  const AUTOPLAY_MS = 10000;
+  let timer;
+
+  totalEl.textContent = String(total).padStart(2,'0');
+
+  slides.forEach((_,i)=>{
+    const b = document.createElement('button');
+    b.className = 'dot' + (i===0?' active':'');
+    b.addEventListener('click',()=>goTo(i));
+    dotsWrap.appendChild(b);
+  });
+  const dots = dotsWrap.querySelectorAll('.dot');
+
+  function goTo(i){
+    slides[index].classList.remove('active');
+    dots[index].classList.remove('active');
+    index = (i + total) % total;
+    slides[index].classList.add('active');
+    dots[index].classList.remove('active');
+    void dots[index].offsetWidth;
+    dots[index].classList.add('active');
+    currEl.textContent = String(index+1).padStart(2,'0');
+    resetTimer();
+  }
+
+  function next(){ goTo(index+1) }
+  function prev(){ goTo(index-1) }
+
+  hero.querySelector('.next').addEventListener('click',next);
+  hero.querySelector('.prev').addEventListener('click',prev);
+
+  function resetTimer(){
+    clearInterval(timer);
+    timer = setInterval(next, AUTOPLAY_MS);
+  }
+  resetTimer();
+
+  hero.addEventListener('mouseenter',()=>clearInterval(timer));
+  hero.addEventListener('mouseleave',()=>{
+    if(!document.body.classList.contains('modal-open')) resetTimer();
+  });
+
+  document.addEventListener('keydown',e=>{
+    if(modal.classList.contains('active')) return; // no navegar con modal abierto
+    if(e.key==='ArrowRight') next();
+    if(e.key==='ArrowLeft')  prev();
+  });
+
+  let tx=0;
+  hero.addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+  hero.addEventListener('touchend',e=>{
+    if(modal.classList.contains('active')) return;
+    const diff = e.changedTouches[0].clientX - tx;
+    if(Math.abs(diff)>50) diff<0 ? next() : prev();
+  });
+
+  hero.addEventListener('mousemove', e => {
+    const activeBg = hero.querySelector('.slide.active .slide__bg');
+    if(!activeBg) return;
+    const { innerWidth: w, innerHeight: h } = window;
+    const x = (e.clientX / w - 0.5);
+    const y = (e.clientY / h - 0.5);
+    activeBg.style.transform = `translate(${x*-35}px, ${y*-25}px) scale(1.04)`;
+  });
+
+  hero.addEventListener('mouseleave', () => {
+    const activeBg = hero.querySelector('.slide.active .slide__bg');
+    if(activeBg) activeBg.style.transform = '';
+  });
+
+  /* ====== LÓGICA DEL MODAL (pausa + reanudación) ====== */
+  const modal        = document.getElementById('contactModal');
+  const modalContent = document.getElementById('modalContent');
+  const closeModalBtn= document.getElementById('closeModal');
+  const contactForm  = document.getElementById('contactForm');
+  const submitBtn    = document.getElementById('submitBtn');
+
+  function openModal(){
+    modal.classList.add('active');
+    document.body.classList.add('modal-open'); // ⏸️ pausa barra de progreso
+    clearInterval(timer);                       // ⏸️ pausa autoplay
+  }
+
+  function closeModal(){
+    modal.classList.remove('active');
+    modalContent.classList.remove('success');
+    document.body.classList.remove('modal-open'); // ▶️ reanuda barra
+    // Reiniciar la animación del dot actual para sincronizar con el nuevo ciclo
+    const d = dots[index];
+    d.classList.remove('active');
+    void d.offsetWidth;
+    d.classList.add('active');
+    resetTimer();                               // ▶️ reanuda autoplay
+  }
+
+  document.querySelectorAll('.modal-trigger').forEach(btn=>{
+    btn.addEventListener('click', openModal);
+  });
+
+  closeModalBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if(e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+  });
+
+  // Envío del formulario
+  contactForm.addEventListener('submit', e => {
+    e.preventDefault();
+    if(!contactForm.checkValidity()){
+      contactForm.reportValidity();
+      return;
+    }
+    submitBtn.textContent = 'Enviando...';
+    submitBtn.disabled = true;
+    /*setTimeout(() => {
+      submitBtn.textContent = 'Enviar Solicitud';
+      submitBtn.disabled = false;
+      modalContent.classList.add('success');   // ✅ check animado
+      setTimeout(closeModal, 2600);            // cierre automático + reanuda slider
+    }, 900);*/
+
+    // Recopilamos los datos del formulario
+    const formData = new FormData(contactForm);
+    const data = new URLSearchParams(formData);
+
+    // Enviamos a Google Script
+    fetch("https://script.google.com/macros/s/AKfycbxeA1dVKfxHMwDoKVnY2pFLB-ngIOCEuc_PXoZj7xU7/dev", {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if(data.status === 'success') {
+        alert('¡Solicitud enviada con éxito! Nos pondremos en contacto pronto.');
+        form.reset(); // Limpia el formulario
+      } else {
+        alert('Hubo un error: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error!', error.message);
+      alert('Error de conexión. Por favor, intenta de nuevo.');
+    })
+    .finally(() => {
+      // Restauramos el botón
+      submitBtn.textContent = 'ENVIAR SOLICITUD';
+      submitBtn.disabled = false;
+    });
+  });
+})();
+</script>
+</body>
+</html>
