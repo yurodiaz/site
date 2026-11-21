@@ -742,11 +742,9 @@
     const data = new URLSearchParams(formData);
 
     // Enviamos a Google Script
-    fetch("https://script.google.com/macros/s/AKfycbxeA1dVKfxHMwDoKVnY2pFLB-ngIOCEuc_PXoZj7xU7/dev", {
+    fetch("https://script.google.com/macros/s/AKfycbzX6IVt-Rp5-5yMTI1cg4AOP2NAvR6rOpBYK5bZjrIeZAWJ7UYoPRAEIeiJ1Pm_L2AuNw/exec", {
       method: 'POST',
-      body: data,
-      // Añadimos esto para evitar problemas de CORS
-      mode: 'no-cors' 
+      body: data
     })
     .then(response => response.json())
     .then(data => {
