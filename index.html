@@ -717,7 +717,7 @@
   contactForm.addEventListener('submit', e => {
     e.preventDefault();
     rellenarFormularioContacto({
-      nombre: 'Juan Pérez',
+      nombre: 'Mario Gomez',
       email: 'juan.perez@empresa.com',
       telefono: '504-9876-5432',
       empresa: 'Mi Empresa S.A.',
@@ -744,7 +744,7 @@
     // Enviamos a Google Script
     fetch("https://script.google.com/macros/s/AKfycbzX6IVt-Rp5-5yMTI1cg4AOP2NAvR6rOpBYK5bZjrIeZAWJ7UYoPRAEIeiJ1Pm_L2AuNw/exec", {
       method: 'POST',
-      body: data
+      body: formData
     })
     .then(response => response.json())
     .then(data => {
